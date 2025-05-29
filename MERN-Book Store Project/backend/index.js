@@ -1,61 +1,23 @@
-import express from 'express';
+import express, { response } from 'express';
 import mongoose from 'mongoose';
 import { PORT, MONGO_URL } from './config.js';
-import { Book } from './models/bookModels.js';
+import bookRoutes from './routes/bookRoutes.js';
+import cors from 'cors';
 
 
-
-//setup app
+//--------------------------------------------------Setup Express App
 const app = express();
 
 
-// middleware
+// -------------------------------------------------Middleware
 app.use(express.json());
 
-
-
-// routes
-app.post('/books', async (req, res) => {
-    try {
-        if (
-            !req.body.title ||
-            !req.body.author ||
-            !req.body.publishYear
-        ) {
-            return res.status(400).send({
-                message: 'Send all required fields: title, author, publishYear'
-            });
-        }
-
-        const newBook = {
-            title: req.body.title,
-            author: req.body.author,
-            publishYear: req.body.publishYear,
-        };
-
-        const book = await Book.create(newBook);
-        return res.status(201).send(book);
-
-
-    } catch (error) {
-        console.log(error.message);
-        res.status(500).send({ message: error.message });
-    }
-});
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+// only allow 5173 to access this api
+app.use(cors({
+    origin: 'http://localhost:5173',
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    allowedHeaders: ['Content-Type']
+}));
 
 
 
@@ -72,6 +34,9 @@ const Connection = async () => {
 }
 
 
+
+// ---------------------------------------------------Routes
+app.use('/books', bookRoutes);
 
 
 Connection();

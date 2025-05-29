@@ -14,23 +14,23 @@ app.use(express.json());
 
 // only allow 5173 to access this api
 app.use(cors({
-    origin: 'http://localhost:5173',
-    methods: ['GET', 'POST', 'PUT', 'DELETE'],
-    allowedHeaders: ['Content-Type']
+	origin: 'http://localhost:5173',
+	methods: ['GET', 'POST', 'PUT', 'DELETE'],
+	allowedHeaders: ['Content-Type']
 }));
 
 
 
 const Connection = async () => {
-    try {
-        await mongoose.connect(MONGO_URL);
-        console.log('Database connected');
-        app.listen(PORT, () => {
-            console.log(`Server is running on port ${PORT}`);
-        })
-    } catch (error) {
-        console.log(error);
-    }
+	try {
+		await mongoose.connect(MONGO_URL);
+		console.log('Database connected');
+		app.listen(PORT, () => {
+			console.log(`Server is running on port ${PORT}`);
+		})
+	} catch (error) {
+		console.log(error);
+	}
 }
 
 

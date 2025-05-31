@@ -1,7 +1,7 @@
 import express from 'express'
-import {Server, Server as SocketIOServer} from 'socket.io'
+import { Server, Server as SocketIOServer } from 'socket.io'
 import mongoose from 'mongoose'
-import userRoutes, {init} from './routes/userRoutes.js'
+import userRoutes, { init } from './routes/userRoutes.js'
 import axios from 'axios'
 import cors from 'cors'
 
@@ -15,10 +15,10 @@ app.use("/user", userRoutes)
 
 //connect sa database
 mongoose.connect('mongodb+srv://johnasblasco:XJqJKdAYkUHtvMBM@cluster0.bxlnnpb.mongodb.net/BookStore?retryWrites=true&w=majority&appName=Cluster0')
-.then(() =>{
-      console.log("Connected to the database!")
-})
-.catch(error => console.log("Error connecting to database",error))
+      .then(() => {
+            console.log("Connected to the database!")
+      })
+      .catch(error => console.log("Error connecting to database", error))
 
 
 //mag up ng server
@@ -28,7 +28,7 @@ const expressServer = app.listen(3500, () => {
 
 
 //gumamit ng SocketIO at ipasok ung expressServer
-const io = new Server(expressServer, {cors: {origin: `*`}})
+const io = new Server(expressServer, { cors: { origin: `*` } })
 
 
 //Whenever a new client connects to the server, gagawin nya to.
@@ -43,7 +43,7 @@ io.on('connection', socket => {
                   const userData = await axios.get('http://localhost:3500/user');
                   socket.emit('ey', userData.data)
             } catch (error) {
-                  
+
             }
       }
       data();

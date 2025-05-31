@@ -2,6 +2,11 @@ import express from 'express';
 import { Book } from '../models/bookModels.js';
 const router = express.Router();
 
+let io;
+
+export function init(ioInstance) {
+	io = ioInstance;
+}
 
 
 // routes
@@ -26,6 +31,8 @@ router.post('/', async (req, res) => {
 		};
 
 		const book = await Book.create(newBook);
+
+		io.emit('newBook', book);
 		return res.status(201).send({
 			book,
 			message: 'Book created successfully'

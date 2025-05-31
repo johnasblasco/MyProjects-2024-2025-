@@ -1,38 +1,55 @@
 import React, { useEffect, useState } from 'react'
 import { Spinner } from '../components/Spinner'
 import { Link } from 'react-router-dom';
-import axios from 'axios';
+import io from 'socket.io-client';
+
+const socket = io('http://localhost:8000');
+// outside of a function so that it will render once
+
+
 const Home = () => {
     const [books, setBooks] = useState([]);
     const [loading, setLoading] = useState(false);
 
+
+
     useEffect(() => {
 
 
+        try {
 
-        // start now 
-        const FetchBook = async () => {
+            if (socket) {
+                socket.on('liveBooks', (data) => {
+                    console.log("LIVE BOOKS", data);
+                    setBooks(data);
+                })
 
-            try {
-                const response = await axios.get("http://localhost:8000/books")
-                setBooks(response.data.data);
-                console.log(response.data);
+                socket.on('newBook', (data) => {
+                    console.log("NEW TITE", data);
+                    setBooks(prevData => [...prevData, data]);
+                })
 
-                // always make 1 second delay before start
-                setLoading(true);
+
                 setTimeout(() => {
                     setLoading(false);
                 }, 1000)
-
-            } catch (err) {
-                console.log(err)
-                setLoading(true)
             }
 
+            return () => {
+                if (socket) {
+
+                    socket.off('liveBooks');
+                    socket.off('newBook');
+                }
+            }
+
+        } catch (err) {
+            console.log(err)
+            setLoading(true)
         }
 
 
-        FetchBook();
+
     }, [])
 
 
@@ -55,7 +72,7 @@ const Home = () => {
                     :          //------CONDITIONAL RENDERING------//
 
                     (
-                        <main className='bg-red-700 h-[90vh]  m-20 p-10 text-amber-100 font-bold' >
+                        <main className='bg-red-700 min-h-[90vh]  m-20 p-10 text-amber-100 font-bold' >
                             <h1 className='text-center text-4xl'>BOOK LIST</h1>
 
                             <Link to="/books/create" className='border-2 p-2 m-4 hover:bg-amber-100 hover:text-red-700'>
@@ -79,7 +96,7 @@ const Home = () => {
                                     {
                                         books.map((book, index) => {
                                             return (
-                                                <tr className='p-2 text-center' key={book._id}>
+                                                <tr className='p-2 text-center' key={index}>
                                                     <td className='border border-amber-100 rounded-md'>{index + 1}</td>
                                                     <td className='border border-amber-100 rounded-md'>{book.title}</td>
                                                     <td className='border border-amber-100 rounded-md max-md:hidden'>{book.author}</td>

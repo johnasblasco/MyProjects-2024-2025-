@@ -1,42 +1,74 @@
-import express, { response } from 'express';
+import express from 'express';
 import mongoose from 'mongoose';
-import { PORT, MONGO_URL } from './config.js';
-import bookRoutes from './routes/bookRoutes.js';
 import cors from 'cors';
+import { Server } from 'socket.io';
+import axios from 'axios';
 
+import { PORT, MONGO_URL } from './config.js';
+import bookRoutes, { init } from './routes/bookRoutes.js';
 
-//--------------------------------------------------Setup Express App
 const app = express();
 
-
-// -------------------------------------------------Middleware
+// Middleware
 app.use(express.json());
-
-// only allow 5173 to access this api
 app.use(cors({
 	origin: 'http://localhost:5173',
 	methods: ['GET', 'POST', 'PUT', 'DELETE'],
 	allowedHeaders: ['Content-Type']
 }));
 
-
-
-const Connection = async () => {
-	try {
-		await mongoose.connect(MONGO_URL);
-		console.log('Database connected');
-		app.listen(PORT, () => {
-			console.log(`Server is running on port ${PORT}`);
-		})
-	} catch (error) {
-		console.log(error);
-	}
-}
-
-
-
-// ---------------------------------------------------Routes
+// Routes
 app.use('/books', bookRoutes);
 
+// Start server and connect to DB
+const startServer = async () => {
+	try {
+		// Connect to MongoDB
+		await mongoose.connect(MONGO_URL);
+		console.log('Database connected');
 
-Connection();
+		// Start Express server
+		const server = app.listen(PORT, () => {
+			console.log(`Server running on port ${PORT}`);
+		});
+
+		// Initialize Socket.IO
+		const io = new Server(server, {
+			cors: { origin: '*' }
+		});
+
+
+		// EMIT SOME DATA TO ALL CLIENTS
+
+		io.on('connection', async (socket) => {
+			console.log('A user connected:', socket.id);
+
+			try {
+
+				const data = async () => {
+					try {
+
+						const response = await axios.get('http://localhost:8000/books');
+						io.emit('liveBooks', response.data.data);
+
+					} catch (error) {
+						console.log(error)
+					}
+				}
+
+				await data();
+			} catch (error) {
+				console.log(error);
+			}
+		});
+
+		init(io);
+
+	} catch (error) {
+		console.error('Error starting server:', error);
+	}
+
+
+};
+
+startServer();

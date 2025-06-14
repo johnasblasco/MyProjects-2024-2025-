@@ -14,6 +14,10 @@ const BookSchema = mongoose.Schema(
             type: Number,
             required: true
         },
+        etlogKoMalaki: {
+            type: String,
+            required: true
+        }
     }
 );
 

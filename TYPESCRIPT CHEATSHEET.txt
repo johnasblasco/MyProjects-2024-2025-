@@ -19,4 +19,10 @@ const EmployeeOne: Employee{
  id: 2,
  name: "nas",
  position: "developer"
+
 };
+
+
+interface name{
+	name: string
+}

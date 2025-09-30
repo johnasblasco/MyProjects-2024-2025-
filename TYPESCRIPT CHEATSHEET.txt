@@ -1,0 +1,22 @@
+function:
+const name = (): string =>{
+}
+
+
+
+
+
+objects: (missing fields or add a wrong one?)
+interface Employee {
+  id: number;
+  name: string;
+	
+	//optional
+  postion?: string;
+}
+
+const EmployeeOne: Employee{
+ id: 2,
+ name: "nas",
+ position: "developer"
+};

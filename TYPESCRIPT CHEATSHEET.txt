@@ -4,7 +4,7 @@ const name = (): string =>{
 
 
 
-
+//commit
 
 objects: (missing fields or add a wrong one?)
 interface Employee {
@@ -26,3 +26,4 @@ const EmployeeOne: Employee{
 interface name{
 	name: string
 }
+
